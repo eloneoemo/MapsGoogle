@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Lista de Hoteles</title>
+    <link rel="stylesheet" href="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.css" />
+    <script src="http://code.jquery.com/jquery-1.11.1.min.js"></script>
+    <script src="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB3mcZnIXaOr0hyPe9JRM-W8yfdOo_gg7w"></script>
+    <style>
+        #mapa{
+            height: 400px;
+        }
+    </style>
+    <script>
+        $(document).ready(function(){
+            var map;
+            var marker;
+            var latNueva = "";
+            var lngNueva = "";
+            var objetoMarcador = {};
+            $("#pagina2").click(function(){
+                cambiarPagina("#pagina2");
+                initMap();
+            });
+            $(".volver").click(function(){
+                cambiarPagina("#pagina1");
+            });
+            $("#pagina3").click(function(){
+                cambiarPagina("#pagina3");
+            });
+             
+            function cambiarPagina (pagina){
+                $.mobile.changePage(pagina,{
+                    transition: "flow"
+                });
+            };
+            function initMap (){
+                map = new google.maps.Map(document.getElementById("mapa"),{
+                    center: {lat:18.471009, lng:-69.840919},
+                    zoom:8,
+                    mapTypeId: google.maps.MapTypeId.ROADMAP
+                });
+
+                marker = new google.maps.Marker({
+                map: map,
+                draggable: true,
+                animation: google.maps.Animation.DROP,
+                position: {lat: 18.471009, lng: -69.840919}                
+                });
+
+                marker.addListener('dragend', function (event){
+                    latNueva = event.latLng.lat();
+                    lngNueva = event.latLng.lng();
+                });
+
+                $("#registrar").click(function(){
+                registrar(latNueva,lngNueva);
+                });              
+            };
+            function registrar(lat,lng){
+                var nombre = $("#nombre").val();
+                var ciudad = $("#ciudad").val();
+                var telefono = $("#telefono").val();
+                var estrellas = $("#estrellas").val();
+
+                marcadorNuevo = {
+                    nombre:nombre,
+                    ciudad:ciudad,
+                    telefono:telefono,
+                    estrellas:estrellas,
+                    lat:latNueva,
+                    lng:lngNueva
+                }
+
+                console.log(marcadorNuevo);
+            };          
+        });
+    </script>
+</head>
+<body>
+    <div data-role="page" id="pagina1">
+        <div data-role="header">
+            <h1>Gestión de Hotel</h1>
+        </div>
+        <div data-role="content">
+            <a id="pagina2" data-role="button">Registrar Hotel</a>
+            <a id="pagina3" data-role="button">Lista Hoteles</a>
+        </div>
+        <div data-role="footer">
+            <p align="center">Gestión de Hotel</p>
+        </div>
+    </div>
+    <!--*****************-->
+    <div data-role="page" id="pagina2">
+        <div data-role="header">
+            <h1>Registrar Hotel</h1>
+        </div>
+        <div data-role="content">
+            <form>
+            <div data-role="ui-field-contain">
+                <label for="nombre">Nombre:</label>
+                <input type="text" id="nombre">
+                <label for="ubicacion">Ubicación:</label>
+                <div id="mapa"></div>
+                <label for="ciudad">Ciudad:</label>
+                <input type="text" id="ciudad">
+                <label for="telefono">Teléfono:</label>
+                <input type="text" id="telefono">
+                <label for="estrellas">Estrellas:</label>
+                <input type="text" id="estrellas">
+                <a id="registrar" data-role="button">Registrar Hotel</a>
+                <a class="volver" data-role="button">Volver</a>
+            </div>
+            </form>
+        </div>
+        <div data-role="footer">
+            <p align="center">Registrar Hotel</p>
+        </div>
+    </div>
+    <!--*****************-->
+    <div data-role="page" id="pagina3">
+            <div data-role="header">
+                <h1>Registrar Hotel</h1>
+            </div>
+            <div data-role="content">                
+                <a class="volver" data-role="button">Volver</a>
+            </div>
+            <div data-role="footer">
+                <p align="center">Registrar Hotel</p>
+            </div>
+        </div>
+</body>
+</html>
