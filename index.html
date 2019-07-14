@@ -20,7 +20,7 @@
             var marker;
             var latNueva = "";
             var lngNueva = "";
-            var objetoMarcador = {};
+            var objetoMarcador = [];
             $("#pagina2").click(function(){
                 cambiarPagina("#pagina2");
                 initMap();
@@ -54,6 +54,7 @@
                 marker.addListener('dragend', function (event){
                     latNueva = event.latLng.lat();
                     lngNueva = event.latLng.lng();
+                    console.log("se ha disparado un evento")
                 });
 
                 $("#registrar").click(function(){
