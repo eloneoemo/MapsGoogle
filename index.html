@@ -10,81 +10,115 @@
     <script src="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB3mcZnIXaOr0hyPe9JRM-W8yfdOo_gg7w"></script>
     <style>
-        #mapa{
+        .mapa{
             height: 400px;
         }
     </style>
     <script>
-        var objetoMarcador = {
-                "hoteles": []
-            };
-            var latNueva = 18.470378;
-            var lngNueva = -69.816457;
-            
+        var objetoMarcador = {"hoteles":[]};                        
         $(document).ready(function(){
             var map;
             var marker;
+            var ul = $("#ul");
+            var li = $("<li></li>");
+            var id = 0;
+            var lat = null;
+            var lng = null;
+            var mapa = null;
+           
+            //************************************************************           
+            $(".detalle").click(function(){                             //
+                alert("clicaste")                                       //
+            });                                                         //
+            //************************************************************
 
-            
-            $("#pagina2").click(function(){
+
+            $("#boton2").click(function(){
                 cambiarPagina("#pagina2");
-                initMap();
             });
+
             $(".volver").click(function(){
                 cambiarPagina("#pagina1");
             });
-            $("#pagina3").click(function(){
+            $(".ir-pagina3").click(function(){
                 cambiarPagina("#pagina3");
-                listarHoteles();
             });
-             
+
+            $('#registrar').click(function(){
+                registrar();
+            });
             function cambiarPagina (pagina){
                 $.mobile.changePage(pagina,{
-                    transition: "flow"
+                    transition: "pop"
                 });
             };
-            function initMap (){
-                map = new google.maps.Map(document.getElementById("mapa"),{
-                    center: {lat:latNueva, lng:latNueva},
+
+            if(lat == null || lng == null || mapa == null){
+                lat = 18.470378;
+                lng = -69.816457;
+                mapa = 'mapa';
+            };
+
+            initMap(lat,lng,mapa);
+
+            function initMap (lat, lng, div){                
+                map = new google.maps.Map(document.getElementById(div),{
+                    center: {lat:lat, lng:lng},
                     zoom:8,
                     mapTypeId: google.maps.MapTypeId.ROADMAP
                 });
+                agregarMarcador ();            
+            };
 
+            function agregarMarcador (){
                 marker = new google.maps.Marker({
                 map: map,
                 draggable: true,
                 animation: google.maps.Animation.DROP,
-                position: {lat: latNueva, lng: latNueva}                
+                position: {lat: lat, lng: lng}                
                 });
-
                 marker.addListener('dragend', function (event){
-                    latNueva = event.latLng.lat();
-                    lngNueva = event.latLng.lng();
-                    console.log("se ha disparado un evento")
-                });
-
-                $("#registrar").click(function(){
-                registrar(latNueva,lngNueva);
-                });              
+                    lat = event.latLng.lat();
+                    lng = event.latLng.lng();
+                });        
             };
-            function registrar(lat,lng){
+
+            function registrar(){
                 var nombre = $("#nombre").val();
                 var ciudad = $("#ciudad").val();
                 var telefono = $("#telefono").val();
                 var estrellas = $("#estrellas").val();
 
-                marcadorNuevo = "{\"nombre\" : \""+nombre+"\",\"ciudad\" : \""+ciudad+"\",\"telefono\" : \"" + telefono + "\" , \"estrellas \" : \"" + estrellas + "\",\"lat\" : "+latNueva+ " , \"lng\" : "+lngNueva +"}";
-                objetoMarcador.hoteles.push(JSON.parse(marcadorNuevo));
-                console.log(objetoMarcador.hoteles.length);
+                marcadorNuevo = "{\"id\" : "+id+",\"nombre\" : \""+nombre+"\",\"ciudad\" : \""+ciudad+"\",\"telefono\" : \"" + telefono + "\" , \"estrellas\" : \"" + estrellas + "\",\"lat\" : "+lat+ " , \"lng\" : "+lng +"}";
+
+                objetoMarcador.hoteles.push(JSON.parse(marcadorNuevo));                              
+                limpiarCampos();
+                var datos = $('<a class="ui-btn ui-btn-icon-right ui-icon-carat-r detalle" id="'+id+'"></a>').text(nombre);
+                li.append(datos);
+                ul.append(li);                                  
+                id++;
             };
-            function listarHoteles (){
-                var ul = $("#ul")
-                for (var i = 0; i < objetoMarcador.hoteles.length;i++){
-                    var li = $("<li></li>");
-                    var datos = $('<a class="ui-btn ui-btn-icon-right ui-icon-carat-r"></a>').text(objetoMarcador.hoteles[i].nombre);
-                    li.append(datos);
-                }
-                ul.append(li);
+
+            function limpiarCampos (){
+                $("#nombre").val("");
+                $("#ciudad").val("");
+                $("#telefono").val("");
+                $("#estrellas").val("");
+                alert("Se ha registrado satisfactoriamente");              
+            };   
+
+            function detallarHotel (id){                 
+                var template;
+                objetoMarcador.hoteles.forEach(function(e){
+                   if(e.id == id){
+                        initMap(e.lat,e.lng,'mapaDetails');
+                        template = "<p>Nombre: "+e.nombre+"<br>Ciudad: "+e.ciudad+"<br>Teléfono: "+e.telefono+"<br>Estrellas: "+e.estrellas+"</p>" ;
+
+                   }else{
+                       template = "No se ha encontrado el dato"
+                   };                   
+                   $("#detalle-hotel").html(template);
+                });
             };
         });
     </script>
@@ -95,8 +129,8 @@
             <h1>Gestión de Hotel</h1>
         </div>
         <div data-role="content">
-            <a id="pagina2" data-role="button">Registrar Hotel</a>
-            <a id="pagina3" data-role="button">Lista Hoteles</a>
+            <a id="boton2" data-role="button">Registrar Hotel</a>
+            <a class="ir-pagina3" data-role="button">Lista Hoteles</a>
         </div>
         <div data-role="footer">
             <p align="center">Gestión de Hotel</p>
@@ -113,7 +147,7 @@
                 <label for="nombre">Nombre:</label>
                 <input type="text" id="nombre">
                 <label for="ubicacion">Ubicación:</label>
-                <div id="mapa"></div>
+                <div id="mapa" class="mapa"></div>
                 <label for="ciudad">Ciudad:</label>
                 <input type="text" id="ciudad">
                 <label for="telefono">Teléfono:</label>
@@ -131,17 +165,33 @@
     </div>
     <!--*****************-->
     <div data-role="page" id="pagina3">
-            <div data-role="header">
-                <h1>Lista de Hoteles</h1>
-            </div>
-            <div data-role="content">
-                <ul data-role="listview" data-inset="true" class="ui-alt-icon" id="ul">
-                </ul>            
-                <a class="volver" data-role="button">Volver</a>
-            </div>
-            <div data-role="footer">
-                <p align="center">Lista de Hoteles</p>
-            </div>
+        <div data-role="header">
+            <h1>Lista de Hoteles</h1>
         </div>
+        <div data-role="content">
+            <ul data-role="listview" data-inset="true" class="ui-alt-icon" id="ul">
+            </ul>            
+            <a class="volver" data-role="button">Volver</a>
+        </div>
+        <div data-role="footer">
+            <p align="center">Lista de Hoteles</p>
+        </div>
+    </div>
+    
+    <div data-role="page" id="pagina4">
+        <div data-role="header">
+            <h1>Detalle Hotel</h1>
+        </div>
+        <div data-role="content">
+            <div id="detalle-hotel"></div>
+            <div class="mapa" id="mapaDetails">
+
+            </div>
+            <a class="ir-pagina3" data-role="button">Lista Hoteles</a>
+        </div>        
+        <div data-role="footer">
+            <p align="center">Detalle Hotel</p>
+        </div>
+    </div>
 </body>
 </html>
