@@ -61,21 +61,21 @@
 
             initMap(lat,lng,mapa);
 
-            function initMap (lat, lng, div){                
+            function initMap (latitude, longitude, div){                
                 map = new google.maps.Map(document.getElementById(div),{
-                    center: {lat:lat, lng:lng},
+                    center: {lat:latitude, lng:longitude},
                     zoom:8,
                     mapTypeId: google.maps.MapTypeId.ROADMAP
                 });
-                agregarMarcador ();            
+                agregarMarcador (latitude,longitude);            
             };
 
-            function agregarMarcador (){
+            function agregarMarcador (latitude,longitude){
                 marker = new google.maps.Marker({
                 map: map,
                 draggable: true,
                 animation: google.maps.Animation.DROP,
-                position: {lat: lat, lng: lng}                
+                position: {lat: latitude, lng: longitude}                
                 });
                 marker.addListener('dragend', function (event){
                     lat = event.latLng.lat();
