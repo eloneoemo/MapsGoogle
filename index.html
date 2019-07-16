@@ -10,7 +10,7 @@
     <script src="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB3mcZnIXaOr0hyPe9JRM-W8yfdOo_gg7w"></script>
     <style>
-        #pagina1, #pagina2, #pagina3, #pagina4{
+        #pagina1, #pagina2, #pagina3 {
             background-color: #9cbeff;
         }
         .mapa{
@@ -36,7 +36,7 @@
             $(".volver").click(function(){
                 cambiarPagina("#pagina1");
             });
-            $(".bonton3").click(function(){
+            $(".ir-pagina3").click(function(){
                 cambiarPagina("#pagina3");
             });
 
@@ -54,14 +54,12 @@
                 lng = -69.816457;
                 mapa = 'mapa';
             };
-            
             $("#boton2").click(function(){
                 cambiarPagina("#pagina2");
-                agregarMarcador (lat,lng,true);
             });
             initMap(lat,lng,mapa);
-            
-            function initMap (latitude, longitude, div){                
+            agregarMarcador (lat,lng,true);
+            function initMap (latitude, longitude, div){ 
                 map = new google.maps.Map(document.getElementById(div),{
                     center: {lat:latitude, lng:longitude},
                     zoom:8,
@@ -70,27 +68,33 @@
             };
 
             function agregarMarcador (latitude,longitude,dragable){
-
                 marker = new google.maps.Marker({
                 map: map,
                 draggable: dragable,
                 animation: google.maps.Animation.DROP,
                 position: {lat: latitude, lng: longitude}                
                 });
-                
                 marker.addListener('dragend', function (event){
                     lat = event.latLng.lat();
                     lng = event.latLng.lng();
                 });        
             };
 
-            function registrar(){
+            function registrar(){  
+                var aprobado;              
                 var nombre = $("#nombre").val();
                 var ciudad = $("#ciudad").val();
                 var telefono = $("#telefono").val();
                 var estrellas = $("#estrellas").val();
+  
+                if(nombre == "" || ciudad == "" || telefono == "" || estrellas == ""){
+                    aprobado = false;
+                }else{
+                   aprobado = true; 
+                };
 
-                marcadorNuevo = "{\"id\" : "+id+",\"nombre\" : \""+nombre+"\",\"ciudad\" : \""+ciudad+"\",\"telefono\" : \"" + telefono + "\" , \"estrellas\" : \"" + estrellas + "\",\"lat\" : "+lat+ " , \"lng\" : "+lng +"}";
+                if(aprobado == true){
+                    marcadorNuevo = "{\"id\" : "+id+",\"nombre\" : \""+nombre+"\",\"ciudad\" : \""+ciudad+"\",\"telefono\" : \"" + telefono + "\" , \"estrellas\" : \"" + estrellas + "\",\"lat\" : "+lat+ " , \"lng\" : "+lng +"}";
 
                 objetoMarcador.hoteles.push(JSON.parse(marcadorNuevo));                              
                 limpiarCampos();
@@ -98,8 +102,10 @@
                 li.append(datos);
                 ul.append(li);                                  
                 id++;
+                }else{
+                    alert("Faltan campos por llenar");
+                };
             };
-
             function limpiarCampos (){
                 $("#nombre").val("");
                 $("#ciudad").val("");
@@ -130,7 +136,7 @@
         </div>
         <div data-role="content">
             <a id="boton2" data-role="button">Registrar Hotel</a>
-            <a class="boton3" data-role="button">Lista Hoteles</a>
+            <a class="ir-pagina3" data-role="button">Lista Hoteles</a>
         </div>
         <div data-role="footer">
             <p align="center">Gestión de Hotel</p>
@@ -187,7 +193,7 @@
             <div class="mapa" id="mapaDetails">
 
             </div>
-            <a class="boton3" data-role="button">Lista Hoteles</a>
+            <a class="ir-pagina3" data-role="button">Lista Hoteles</a>
         </div>        
         <div data-role="footer">
             <p align="center">Detalle Hotel</p>
