@@ -10,8 +10,12 @@
     <script src="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB3mcZnIXaOr0hyPe9JRM-W8yfdOo_gg7w"></script>
     <style>
+        #pagina1, #pagina2, #pagina3, #pagina4{
+            background-color: #9cbeff;
+        }
         .mapa{
             height: 400px;
+            margin-bottom: 1em; 
         }
     </style>
     <script>
@@ -25,25 +29,14 @@
             var lat = null;
             var lng = null;
             var mapa = null;
-           
-            //************************************************************           
-            $(".detalle").click(function(){                             //
-                alert("clicaste")                                       //
-            });                                                         //
-            //************************************************************
-           
-            $("body").on("click", ".detalle", function () { //
-            alert("clicaste") //
+                     
+            $("body").on("click", ".detalle", function (e) { //
+                detallarHotel(e.currentTarget.id) //
             });
-
-            $("#boton2").click(function(){
-                cambiarPagina("#pagina2");
-            });
-
             $(".volver").click(function(){
                 cambiarPagina("#pagina1");
             });
-            $(".ir-pagina3").click(function(){
+            $(".bonton3").click(function(){
                 cambiarPagina("#pagina3");
             });
 
@@ -61,25 +54,30 @@
                 lng = -69.816457;
                 mapa = 'mapa';
             };
-
+            
+            $("#boton2").click(function(){
+                cambiarPagina("#pagina2");
+                agregarMarcador (lat,lng,true);
+            });
             initMap(lat,lng,mapa);
-
+            
             function initMap (latitude, longitude, div){                
                 map = new google.maps.Map(document.getElementById(div),{
                     center: {lat:latitude, lng:longitude},
                     zoom:8,
                     mapTypeId: google.maps.MapTypeId.ROADMAP
-                });
-                agregarMarcador (latitude,longitude);            
+                });                            
             };
 
-            function agregarMarcador (latitude,longitude){
+            function agregarMarcador (latitude,longitude,dragable){
+
                 marker = new google.maps.Marker({
                 map: map,
-                draggable: true,
+                draggable: dragable,
                 animation: google.maps.Animation.DROP,
                 position: {lat: latitude, lng: longitude}                
                 });
+                
                 marker.addListener('dragend', function (event){
                     lat = event.latLng.lat();
                     lng = event.latLng.lng();
@@ -110,18 +108,17 @@
                 alert("Se ha registrado satisfactoriamente");              
             };   
 
-            function detallarHotel (id){                 
+            function detallarHotel (idObtenido){                 
                 var template;
-                objetoMarcador.hoteles.forEach(function(e){
-                   if(e.id == id){
-                        initMap(e.lat,e.lng,'mapaDetails');
-                        template = "<p>Nombre: "+e.nombre+"<br>Ciudad: "+e.ciudad+"<br>Teléfono: "+e.telefono+"<br>Estrellas: "+e.estrellas+"</p>" ;
-
-                   }else{
-                       template = "No se ha encontrado el dato"
-                   };                   
-                   $("#detalle-hotel").html(template);
-                });
+                for(var i = 0; i <objetoMarcador.hoteles.length; i++){ 
+                    if(objetoMarcador.hoteles[i].id == parseFloat(idObtenido)){
+                        initMap(objetoMarcador.hoteles[i].lat,objetoMarcador.hoteles[i].lng,'mapaDetails');
+                        agregarMarcador (objetoMarcador.hoteles[i].lat,objetoMarcador.hoteles[i].lng,false);
+                        template = "<p><b>Nombre:</b> "+objetoMarcador.hoteles[i].nombre+"<br><b>Ciudad:</b> "+objetoMarcador.hoteles[i].ciudad+"<br><b>Teléfono:</b> "+objetoMarcador.hoteles[i].telefono+"<br><b>Estrellas:</b> "+objetoMarcador.hoteles[i].estrellas+"</p>";
+                        $("#detalle-hotel").html(template);
+                        cambiarPagina("#pagina4");
+                    };
+                };
             };
         });
     </script>
@@ -133,7 +130,7 @@
         </div>
         <div data-role="content">
             <a id="boton2" data-role="button">Registrar Hotel</a>
-            <a class="ir-pagina3" data-role="button">Lista Hoteles</a>
+            <a class="boton3" data-role="button">Lista Hoteles</a>
         </div>
         <div data-role="footer">
             <p align="center">Gestión de Hotel</p>
@@ -190,7 +187,7 @@
             <div class="mapa" id="mapaDetails">
 
             </div>
-            <a class="ir-pagina3" data-role="button">Lista Hoteles</a>
+            <a class="boton3" data-role="button">Lista Hoteles</a>
         </div>        
         <div data-role="footer">
             <p align="center">Detalle Hotel</p>
